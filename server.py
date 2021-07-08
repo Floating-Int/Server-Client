@@ -1,6 +1,7 @@
 import socket
 from address import Address, DEFAULT
 from threading import Thread
+import signal
 
 
 class Server:
@@ -19,7 +20,14 @@ class Server:
             self.shutdown()
             print("-- Server shutdown --")
         self.running = True
+        signal.signal(signal.SIGINT, self.signal_handler)
         Thread(target=self.handle_client).start()  # looping
+
+    def signal_handler(sig, frame):
+        print("SIGINT recieved")
+        print("-- Server shutdown --")
+        self.shutdown()
+        exit(0)
 
     def handle_client(self):
         while self.running:

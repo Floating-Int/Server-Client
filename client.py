@@ -2,6 +2,7 @@ import socket
 from address import Address, DEFAULT
 from threading import Thread
 import time
+import codecs
 
 
 class Client:
@@ -31,8 +32,12 @@ class Client:
     def handle_recv(self):
         while self.connected:
             try:
-                msg = self.socket.recv(1024)
-                print("\n| ", msg.decode("utf-8"))  # from server
+                msg = self.socket.recv(1024).decode("utf-8")
+                if msg == "":
+                    print("\n-- Disconnected from server --")
+                    self.shutdown()
+                    return
+                print("\n|", msg)  # from server
             except ConnectionResetError:
                 self.shutdown()
                 print("\n-- Disconnected from server --")
