@@ -55,4 +55,4 @@ class Client:
         self.socket.close()
 
 
-Client(port=5050, address="vps.i-h.no")  # init
+Client(port=5050)  # , address="vps.i-h.no")  # init
