@@ -2,7 +2,7 @@ import socket
 from address import Address, DEFAULT
 from threading import Thread
 import time
-import codecs
+import signal
 
 
 class Client:
@@ -20,8 +20,16 @@ class Client:
             exit()
 
         self.connected = True
+        signal.signal(signal.SIGINT, self.signal_handler)
         Thread(target=self.handle_input).start()  # looping
         Thread(target=self.handle_recv).start()  # looping
+
+    def signal_handler(sig, frame):
+        print("SIGINT recieved")
+        print("-- Client connections closed --")
+        print("-- Exited program --")
+        self.shutdown()
+        exit(0)
 
     def handle_input(self):  # threaded
         while self.connected:
