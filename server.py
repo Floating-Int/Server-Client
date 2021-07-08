@@ -26,7 +26,7 @@ class Server:
             client = self.socket.accept()
             self.clients.append(client)  # keep track of new client
             def func(): self.handle_recv(client)  # lambda
-            Thread(target=func, name="This").start()  # looping
+            Thread(target=func).start()  # looping
             print(f"-- Client [{client[1][1]}] has connected --")
 
     def broadcast(self, message):  # message is bytes
@@ -40,19 +40,8 @@ class Server:
             clientsocket, _adress = client
             clientsocket.close()
 
-    # def handle_recv(self):
-    #    while self.running:  # TODO: handle recv on each client in Threads
-    #        if len(self.clients) == 0:
-    #            continue
-    #        for client in self.clients:
-    #            clientsocket, address = client
-    #            msg = clientsocket.recv(1024)  # is bytes
-    #            print(f"[{address[1]}]", msg.decode("utf-8"))
-    #            self.broadcast(msg)
-
     def handle_recv(self, client):
         clientsocket, address = client
-        print("Now", address)
         while self.running:
             msg = clientsocket.recv(1024)  # is bytes
             print(f"[{address[1]}]", msg.decode("utf-8"))

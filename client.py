@@ -32,7 +32,7 @@ class Client:
         while self.connected:
             try:
                 msg = self.socket.recv(1024)
-                print("Message:", msg.decode("utf-8"))  # from server
+                print("| ", msg.decode("utf-8"))  # from server
             except ConnectionResetError:
                 self.shutdown()
                 print("\n-- Disconnected from server --")
