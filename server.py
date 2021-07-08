@@ -9,6 +9,7 @@ class Server:
     def __init__(self, address=DEFAULT, port=DEFAULT):
         self.address = Address(address, port)  # init address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.settimeout(1.0)  # seconds
         self.clients = []
         try:
             print("-- Server startup --")
@@ -32,7 +33,10 @@ class Server:
 
     def handle_client(self):
         while self.running:
-            client = self.socket.accept()
+            try:
+                client = self.socket.accept()
+            except socket.timeout:
+                continue
             self.clients.append(client)  # keep track of new client
             def func(): self.handle_recv(client)  # lambda
             Thread(target=func).start()  # looping
@@ -48,7 +52,7 @@ class Server:
 
     def shutdown(self):
         self.running = False
-        self.hande_client_thread.join(1.0)  # seconds
+        self.hande_client_thread.join(3.0)  # seconds
         for client in self.clients:
             clientsocket, _address = client
             clientsocket.close()
