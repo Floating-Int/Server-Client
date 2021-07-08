@@ -23,7 +23,7 @@ class Server:
         signal.signal(signal.SIGINT, self.signal_handler)
         Thread(target=self.handle_client).start()  # looping
 
-    def signal_handler(sig, frame):
+    def signal_handler(self, sig, frame):
         print("SIGINT recieved")
         print("-- Server shutdown --")
         self.shutdown()

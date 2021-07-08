@@ -24,7 +24,7 @@ class Client:
         Thread(target=self.handle_input).start()  # looping
         Thread(target=self.handle_recv).start()  # looping
 
-    def signal_handler(sig, frame):
+    def signal_handler(self, sig, frame):
         print("SIGINT recieved")
         print("-- Client connections closed --")
         print("-- Exited program --")
