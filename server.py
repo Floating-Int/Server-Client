@@ -22,6 +22,7 @@ class Server:
         self.running = True
         signal.signal(signal.SIGINT, self.signal_handler)
         self.hande_client_thread = Thread(target=self.handle_client)
+        self.hande_client_thread.daemon = True
         self.hande_client_thread.start()  # looping
 
     def signal_handler(self, sig, frame):
@@ -48,7 +49,7 @@ class Server:
 
     def shutdown(self):
         self.running = False
-        self.hande_client_thread.join()
+        self.hande_client_thread.join(1.0)  # seconds
         for client in self.clients:
             clientsocket, _address = client
             clientsocket.close()
