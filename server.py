@@ -52,7 +52,7 @@ class Server:
         while self.running:
             try:
                 msg = clientsocket.recv(1024)  # is bytes
-            except Exception:
+            except Exception as error:
                 print(f"Client [{address[1]}] had an unexpected erro: {error}")
                 if client in self.clients:
                     self.clients.remove(client)
