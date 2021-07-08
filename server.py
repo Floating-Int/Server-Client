@@ -21,7 +21,8 @@ class Server:
             print("-- Server shutdown --")
         self.running = True
         signal.signal(signal.SIGINT, self.signal_handler)
-        Thread(target=self.handle_client).start()  # looping
+        self.hande_client_thread = Thread(target=self.handle_client)
+        self.hande_client_thread.start()  # looping
 
     def signal_handler(self, sig, frame):
         print("SIGINT recieved")
@@ -47,6 +48,7 @@ class Server:
 
     def shutdown(self):
         self.running = False
+        self.hande_client_thread.join()
         for client in self.clients:
             clientsocket, _address = client
             clientsocket.close()
