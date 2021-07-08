@@ -6,7 +6,7 @@ from threading import Thread
 class Server:
 
     def __init__(self, address=DEFAULT, port=DEFAULT):
-        self.address = Address(address, port)  # init adress
+        self.address = Address(address, port)  # init address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clients = []
         try:
@@ -31,19 +31,28 @@ class Server:
 
     def broadcast(self, message):  # message is bytes
         for client in self.clients:
-            clientsocket, _adress = client
-            clientsocket.send(message)
+            clientsocket, _address = client
+            try:
+                clientsocket.send(message)
+            except BrokenPipeError:
+                self.clients.remove(client)
 
     def shutdown(self):
         self.running = False
         for client in self.clients:
-            clientsocket, _adress = client
+            clientsocket, _address = client
             clientsocket.close()
 
     def handle_recv(self, client):
         clientsocket, address = client
         while self.running:
-            msg = clientsocket.recv(1024)  # is bytes
+            try:
+                msg = clientsocket.recv(1024)  # is bytes
+            except Exception as error:
+                print(f"Client [{address[1]}] had an unexpected erro: {error}")
+                if client in self.clients:
+                    self.clients.remove(client)
+                return
             print(f"[{address[1]}]", msg.decode("utf-8"))
             self.broadcast(msg)
 

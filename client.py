@@ -7,11 +7,11 @@ import time
 class Client:
 
     def __init__(self, address=DEFAULT, port=DEFAULT):
-        self.adress = Address(address, port)  # init adress
+        self.address = Address(address, port)  # init address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:  # try to connect to server
-            self.socket.connect(self.adress.to_tuple())
-            print(f"-- Connected to server [{self.adress.to_tuple()[0]}] --")
+            self.socket.connect(self.address.to_tuple())
+            print(f"-- Connected to server [{self.address.to_tuple()[0]}] --")
         except ConnectionRefusedError:
             print("Server could not be found!")
             print("-- Exited program --")
@@ -32,7 +32,7 @@ class Client:
         while self.connected:
             try:
                 msg = self.socket.recv(1024)
-                print("| ", msg.decode("utf-8"))  # from server
+                print("\n| ", msg.decode("utf-8"))  # from server
             except ConnectionResetError:
                 self.shutdown()
                 print("\n-- Disconnected from server --")
@@ -42,4 +42,4 @@ class Client:
         self.socket.close()
 
 
-Client(port=5050)  # init
+Client(port=5050, address="vps.i-h.no")  # init
