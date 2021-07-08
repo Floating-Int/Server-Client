@@ -1,7 +1,6 @@
 import socket
 from address import Address, DEFAULT
 from threading import Thread
-import signal
 
 
 class Server:
@@ -9,7 +8,6 @@ class Server:
     def __init__(self, address=DEFAULT, port=DEFAULT):
         self.address = Address(address, port)  # init address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(1.0)  # seconds
         self.clients = []
         try:
             print("-- Server startup --")
@@ -21,15 +19,7 @@ class Server:
             self.shutdown()
             print("-- Server shutdown --")
         self.running = True
-        signal.signal(signal.SIGINT, self.signal_handler)
-        self.hande_client_thread = Thread(target=self.handle_client)
-        self.hande_client_thread.start()  # looping
-
-    def signal_handler(self, sig, frame):
-        print("SIGINT recieved")
-        print("-- Server shutdown --")
-        self.shutdown()
-        exit(0)
+        Thread(target=self.handle_client).start()  # looping
 
     def handle_client(self):
         while self.running:
@@ -52,17 +42,17 @@ class Server:
 
     def shutdown(self):
         self.running = False
-        self.hande_client_thread.join(3.0)  # seconds
         for client in self.clients:
             clientsocket, _address = client
             clientsocket.close()
+        self.socket.close()
 
     def handle_recv(self, client):
         clientsocket, address = client
         while self.running:
             try:
                 msg = clientsocket.recv(1024)  # is bytes
-            except Exception as error:
+            except Exception:
                 print(f"Client [{address[1]}] had an unexpected erro: {error}")
                 if client in self.clients:
                     self.clients.remove(client)
